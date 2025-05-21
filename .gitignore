@@ -1,15 +1,50 @@
-# Godot 4+ specific ignores
-.godot/
+# C/C++ generated
+*.a
+*.ax
+*.d
+*.dll
+*.lib
+*.lo
+*.o
+*.os
+*.ox
+*.Plo
+*.so
 
-# Godot-specific ignores
-.import/
-export.cfg
-export_credentials.cfg
+# Python generated
+__pycache__/
+*.pyc
 
-# Imported translations (automatically generated from CSV files)
-*.translation
+# Doxygen
+doxygen/
 
-# Mono-specific ignores
-.mono/
-data_*/
-mono_crash.*.json
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
