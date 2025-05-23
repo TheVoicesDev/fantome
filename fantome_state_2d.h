@@ -6,19 +6,25 @@
 #include "core/object/gdvirtual.gen.inc"
 #include "scene/main/node.h"
 #include "fantome_state_controller_2d.h"
+#include "fantome_state_set_2d.h"
 
 class FantomeState2D : public Node {
     GDCLASS(FantomeState2D, Node);
 
 public:
     int64_t priority = 0;
+    bool relative_to_set = true;
 
     void set_priority(const int64_t p_priority);
     int64_t get_priority() const;
+    void set_relative_to_set(const bool p_value);
+    bool get_relative_to_set();
 
-    void enter_controller();
-    FantomeStateController2D* get_controller();
+    void enter_controller(FantomeStateController2D* p_controller);
     void exit_controller();
+
+    FantomeStateController2D* get_controller();
+    FantomeStateSet2D* get_state_set();
 
     bool can_switch();
 

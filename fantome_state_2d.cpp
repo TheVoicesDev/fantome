@@ -8,12 +8,20 @@ int64_t FantomeState2D::get_priority() const {
     return priority;
 }
 
-void FantomeState2D::enter_controller() {
+void FantomeState2D::enter_controller(FantomeStateController2D* p_controller) {
+    if (!p_controller)
+        return;
+    
+    _controller = p_controller;
     GDVIRTUAL_CALL(_enter_controller);
 }
 
 void FantomeState2D::exit_controller() {
+    if (!_controller)
+        return;
+
     GDVIRTUAL_CALL(_exit_controller);
+    _controller = nullptr;
 }
 
 bool FantomeState2D::can_switch() {
@@ -42,7 +50,12 @@ bool FantomeState2D::compare_by_priority(const Variant &p_a, const Variant &p_b)
 void FantomeState2D::_notification(int p_what) {
     switch (p_what) {
         case NOTIFICATION_PARENTED: {
-            
+            _controller = Object::cast_to<FantomeStateController2D>(get_parent());
+            if (_controller)
+                enter_controller(_controller);
+        } break;
+        case NOTIFICATION_UNPARENTED: {
+            exit_controller();
         } break;
     }
 }
