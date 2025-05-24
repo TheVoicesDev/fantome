@@ -17,3 +17,7 @@ PackedStringArray FantomeCharacter2D::get_configuration_warnings() const {
     return warnings;
 }
 
+void FantomeCharacter2D::_bind_methods() {
+    ClassDB::bind_method("get_controller", &FantomeCharacter2D::get_controller);
+}
+

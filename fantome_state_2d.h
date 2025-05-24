@@ -8,6 +8,8 @@
 #include "fantome_state_controller_2d.h"
 #include "fantome_state_set_2d.h"
 
+class FantomeStateSet2D;
+
 class FantomeState2D : public Node {
     GDCLASS(FantomeState2D, Node);
 
@@ -18,18 +20,20 @@ public:
     void set_priority(const int64_t p_priority);
     int64_t get_priority() const;
     void set_relative_to_set(const bool p_value);
-    bool get_relative_to_set();
+    bool get_relative_to_set() const;
 
     void enter_controller(FantomeStateController2D* p_controller);
     void exit_controller();
 
-    FantomeStateController2D* get_controller();
-    FantomeStateSet2D* get_state_set();
+    FantomeStateController2D* get_controller() const;
+    FantomeStateSet2D* get_state_set() const;
 
     bool can_switch();
 
     void begin();
     void end();
+
+    PackedStringArray get_configuration_warnings() const;
 
     static bool compare_by_priority(const Variant &p_a, const Variant &p_b);
 
@@ -46,6 +50,7 @@ protected:
     static void _bind_methods();
 
 private:
+    FantomeStateSet2D* _state_set = nullptr;
     FantomeStateController2D* _controller = nullptr;
 };
 

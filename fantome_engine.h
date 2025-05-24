@@ -37,8 +37,6 @@ private:
 
     int64_t _delta_ticks = 0;
     int64_t _last_physics_frame_count = 0;
-    
-    TypedArray<Stat>
 };
 
 VARIANT_ENUM_CAST(FantomeEngine::TickMode);

@@ -6,24 +6,36 @@ FantomeCharacter2D* FantomeStateController2D::get_character() const {
 }
 
 void FantomeStateController2D::update_states() {
-    _states.clear();
+    _state_map.clear();
+    _state_list.clear();
 
     TypedArray<Node> children = get_children();
-    for (int c = 0; c < children.size(); c++) {
-    FantomeStateSet2D* state_set = Object::cast_to<FantomeStateSet2D>(children[c]);
-    if (state_set) {
-        for (int s = 0; s < state_set->states.size(); s++) {
-            FantomeState2D* cur_state = Object::cast_to<FantomeState2D>(state_set->states[s]);
-            if (!cur_state)
-                continue;
+    int i;
 
-            _states.set(cur_state->get_name(), cur_state);
+    for (i = 0; i < children.size(); i++) {
+        FantomeStateSet2D* state_set = Object::cast_to<FantomeStateSet2D>(children[i]);
+        if (state_set) {
+            for (int s = 0; s < state_set->states.size(); s++) {
+                FantomeState2D* cur_state = Object::cast_to<FantomeState2D>(state_set->states[s]);
+                if (!cur_state)
+                    continue;
+
+                _state_list.append(cur_state);
+            }
         }
+
+        FantomeState2D* state = Object::cast_to<FantomeState2D>(children[i]);
+        if (state)
+            _state_list.append(state);
     }
 
-    FantomeState2D* state = Object::cast_to<FantomeState2D>(children[c]);
-        if (state) 
-            _states.set(state->get_name(), state);
+    _state_list = _sort_states(_state_list); // uses merge sort for priority stuff
+    for (i = 0; i < _state_list.size(); i++) {
+        FantomeState2D* state = Object::cast_to<FantomeState2D>(_state_list[i]);
+        if (!state || _state_map.has(state->get_name()))
+            continue;
+        
+        _state_map.set(state->get_name(), state);
     }
 }
 
@@ -34,6 +46,44 @@ PackedStringArray FantomeStateController2D::get_configuration_warnings() const {
         warnings.push_back(RTR("This state controller isn't parented to a character so it can't process states properly. Consider parenting this state controller to a character."));
     
     return warnings;
+}
+
+TypedArray<FantomeState2D> FantomeStateController2D::_sort_states(const TypedArray<FantomeState2D> &p_array) const {
+    if (p_array.size() <= 1)
+        return p_array;
+    
+    int mid = p_array.size() / 2;
+    TypedArray<FantomeState2D> left = _sort_states(p_array.slice(0, mid));
+    TypedArray<FantomeState2D> right = _sort_states(p_array.slice(mid, p_array.size()));
+    return _merge_state_array(left, right);
+}
+
+TypedArray<FantomeState2D> FantomeStateController2D::_merge_state_array(const TypedArray<FantomeState2D> &p_left, const TypedArray<FantomeState2D> &p_right) const {
+    TypedArray<FantomeState2D> result;
+    int i = 0; int j = 0;
+    while (i < p_left.size() && j < p_right.size()) {
+        FantomeState2D* left = Object::cast_to<FantomeState2D>(p_left[i]);
+        FantomeState2D* right = Object::cast_to<FantomeState2D>(p_right[j]);
+        if (left->priority < right->priority) {
+            result.append(left);
+            i++;
+        } else {
+            result.append(right);
+            j++;
+        }
+    }
+
+    while (i < p_left.size()) {
+        FantomeState2D* left = Object::cast_to<FantomeState2D>(p_left[i]);
+        i++;
+    }   
+
+    while (j < p_right.size()) {
+        FantomeState2D* right = Object::cast_to<FantomeState2D>(p_right[j]);
+        j++;
+    }
+
+    return result;
 }
 
 void FantomeStateController2D::_notification(int p_what) {

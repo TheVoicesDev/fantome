@@ -9,6 +9,9 @@
 template <typename T>
 class TypedArray;
 
+class FantomeState2D;
+class FantomeStateController2D;
+
 class FantomeStateSet2D : public Node {
     GDCLASS(FantomeStateSet2D, Node);
 
@@ -17,6 +20,10 @@ public:
 
     TypedArray<FantomeState2D> get_states() const;
     void update_states();
+
+    FantomeStateController2D* get_controller() const;
+
+    PackedStringArray get_configuration_warnings() const;
 
 protected:
     void _notification(int p_what);

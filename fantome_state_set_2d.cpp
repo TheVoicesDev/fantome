@@ -23,6 +23,19 @@ void FantomeStateSet2D::update_states() {
         _controller->update_states();
 }
 
+FantomeStateController2D* FantomeStateSet2D::get_controller() const {
+    return _controller;
+}
+
+PackedStringArray FantomeStateSet2D::get_configuration_warnings() const {
+    PackedStringArray warnings = Node::get_configuration_warnings();
+
+    if (states.size() <= 0)
+        warnings.push_back(RTR("This state set doesn't have any states registered as children, so it will do nothing by itself. Consider adding nodes inheriting FantomeStateSet2D as children."));
+    
+    return warnings;
+}
+
 void FantomeStateSet2D::_notification(int p_what) {
     switch (p_what) {
         case NOTIFICATION_PARENTED: {
@@ -47,4 +60,11 @@ void FantomeStateSet2D::_notification(int p_what) {
             update_states();
         } break;
     }
+}
+
+void FantomeStateSet2D::_bind_methods() {
+    ClassDB::bind_method("get_states", &FantomeStateSet2D::get_states);
+    ClassDB::bind_method("update_states", &FantomeStateSet2D::update_states);
+
+    ClassDB::bind_method("get_controller", &FantomeStateSet2D::get_controller);
 }

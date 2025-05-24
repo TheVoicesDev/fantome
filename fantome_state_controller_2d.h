@@ -15,6 +15,9 @@ class TypedArray;
 template <typename K, typename V>
 class TypedDictionary;
 
+class FantomeCharacter2D;
+class FantomeState2D;
+
 class FantomeStateController2D : public Node {
     GDCLASS(FantomeStateController2D, Node);
 
@@ -29,7 +32,12 @@ protected:
 
 private:
     FantomeCharacter2D* _character;
-    TypedDictionary<StringName, FantomeState2D> _states;
+
+    TypedArray<FantomeState2D> _sort_states(const TypedArray<FantomeState2D> &p_array) const;
+    TypedArray<FantomeState2D> _merge_state_array(const TypedArray<FantomeState2D> &p_left, const TypedArray<FantomeState2D> &p_right) const;
+
+    TypedDictionary<StringName, FantomeState2D> _state_map;
+    TypedArray<FantomeState2D> _state_list;
 };
 
 #endif // FANTOME_STATE_CONTROLLER_2D_H
