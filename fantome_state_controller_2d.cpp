@@ -75,11 +75,13 @@ TypedArray<FantomeState2D> FantomeStateController2D::_merge_state_array(const Ty
 
     while (i < p_left.size()) {
         FantomeState2D* left = Object::cast_to<FantomeState2D>(p_left[i]);
+        result.append(left);
         i++;
     }   
 
     while (j < p_right.size()) {
         FantomeState2D* right = Object::cast_to<FantomeState2D>(p_right[j]);
+        result.append(right);
         j++;
     }
 
