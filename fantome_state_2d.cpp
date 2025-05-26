@@ -1,5 +1,18 @@
 #include "fantome_state_2d.h"
 
+void FantomeState2D::set_active(const bool p_active) {
+    _active = p_active;
+
+    set_process(p_active);
+    set_process_internal(p_active);
+    set_physics_process(p_active);
+    set_physics_process_internal(p_active);
+}
+
+bool FantomeState2D::get_active() const {
+    return _active;
+}
+
 void FantomeState2D::set_priority(const int64_t p_priority) {
     priority = p_priority;
 }
@@ -36,6 +49,10 @@ FantomeStateController2D* FantomeState2D::get_controller() const {
     return _controller;
 }
 
+FantomeCharacter2D* FantomeState2D::get_character() const {
+    return _controller->get_character();
+}
+
 FantomeStateSet2D* FantomeState2D::get_state_set() const {
     return _state_set;
 }
@@ -46,12 +63,18 @@ bool FantomeState2D::can_switch() {
     return ret;
 }
 
-void FantomeState2D::begin() {
-    GDVIRTUAL_CALL(_begin);
+bool FantomeState2D::is_finished() {
+    bool ret = false;
+    GDVIRTUAL_CALL(_is_finished, ret);
+    return ret;
 }
 
-void FantomeState2D::end() {
-    GDVIRTUAL_CALL(_end);
+void FantomeState2D::begin(const Dictionary &p_states) {
+    GDVIRTUAL_CALL(_begin, p_states);
+}
+
+void FantomeState2D::end(const Dictionary &p_states) {
+    GDVIRTUAL_CALL(_end, p_states);
 }
 
 PackedStringArray FantomeState2D::get_configuration_warnings() const {
@@ -74,6 +97,9 @@ bool FantomeState2D::compare_by_priority(const Variant &p_a, const Variant &p_b)
 
 void FantomeState2D::_notification(int p_what) {
     switch (p_what) {
+        case NOTIFICATION_READY: {
+            set_active(get_active());
+        } break;
         case NOTIFICATION_PARENTED: {
             _controller = Object::cast_to<FantomeStateController2D>(get_parent());
             if (_controller) {
@@ -92,20 +118,22 @@ void FantomeState2D::_notification(int p_what) {
 
 void FantomeState2D::_bind_methods() {
     // Getters and Setters
+    ClassDB::bind_method(D_METHOD("set_active", "active"), &FantomeState2D::set_active);
+    ClassDB::bind_method("get_active", &FantomeState2D::get_active);
     ClassDB::bind_method(D_METHOD("set_priority", "priority"), &FantomeState2D::set_priority);
     ClassDB::bind_method("get_priority", &FantomeState2D::get_priority);
     ClassDB::bind_method(D_METHOD("set_relative_to_set", "value"), &FantomeState2D::set_relative_to_set);
     ClassDB::bind_method("get_relative_to_set", &FantomeState2D::get_relative_to_set);
 
     // Properties
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "active"), "set_active", "get_active");
     ADD_PROPERTY(PropertyInfo(Variant::INT, "priority"), "set_priority", "get_priority");
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "relative_to_set"), "set_relative_to_set", "get_relative_to_set");
 
     // Methods
     ClassDB::bind_method("get_controller", &FantomeState2D::get_controller);
+    ClassDB::bind_method("get_character", &FantomeState2D::get_character);
     ClassDB::bind_method("get_state_set", &FantomeState2D::get_state_set);
-
-    ClassDB::bind_method("can_switch", &FantomeState2D::can_switch);
 
     ClassDB::bind_static_method("FantomeState2D", D_METHOD("compare_by_priority", "a", "b"), &FantomeState2D::compare_by_priority);
 
@@ -114,7 +142,8 @@ void FantomeState2D::_bind_methods() {
     GDVIRTUAL_BIND(_exit_controller)
 
     GDVIRTUAL_BIND(_can_switch)
+    GDVIRTUAL_BIND(_is_finished)
 
-    GDVIRTUAL_BIND(_begin)
-    GDVIRTUAL_BIND(_end)
+    GDVIRTUAL_BIND(_begin, "states")
+    GDVIRTUAL_BIND(_end, "states")
 }
