@@ -210,6 +210,9 @@ void FantomeStateController2D::_notification(int p_what) {
             if (Engine::get_singleton()->is_editor_hint())
                 return;
             
+            set_physics_process(true);
+            set_physics_process_internal(true);
+            
             ERR_FAIL_COND_MSG(initial_state == nullptr, "No initial state set for this controller!");
             change_state(initial_state->get_name());
         } break;

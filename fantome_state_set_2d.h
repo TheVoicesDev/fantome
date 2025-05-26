@@ -23,7 +23,7 @@ public:
 
     FantomeStateController2D* get_controller() const;
 
-    PackedStringArray get_configuration_warnings() const;
+    PackedStringArray get_configuration_warnings() const override;
 
 protected:
     void _notification(int p_what);

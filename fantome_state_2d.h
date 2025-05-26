@@ -40,7 +40,7 @@ public:
     virtual void begin(const Dictionary &p_states);
     virtual void end(const Dictionary &p_states);
 
-    PackedStringArray get_configuration_warnings() const;
+    PackedStringArray get_configuration_warnings() const override;
 
     static bool compare_by_priority(const Variant &p_a, const Variant &p_b);
 
