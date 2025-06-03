@@ -45,6 +45,7 @@ public:
 
     void change_state(const StringName &p_state_name);
     FantomeState2D* get_current_state() const;
+    StringName get_current_state_name() const;
 
     PackedStringArray get_configuration_warnings() const override;
 

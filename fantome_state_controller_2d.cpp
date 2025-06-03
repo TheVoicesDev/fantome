@@ -106,7 +106,6 @@ void FantomeStateController2D::change_state(const StringName &p_state_name) {
     }
     
     _current_state = next_state;
-
     _state_parameters.set("previous_state", previous_state);
     _state_parameters.set("next_state", Variant());
     _current_state->begin(_state_parameters);
@@ -116,6 +115,10 @@ void FantomeStateController2D::change_state(const StringName &p_state_name) {
 
 FantomeState2D* FantomeStateController2D::get_current_state() const {
     return _current_state;
+}
+
+StringName FantomeStateController2D::get_current_state_name() const {
+    return _current_state ? _current_state->get_name() : StringName();
 }
 
 PackedStringArray FantomeStateController2D::get_configuration_warnings() const {
@@ -188,13 +191,13 @@ void FantomeStateController2D::_notification(int p_what) {
                 return;
 
             StringName next_state;
-            if (next_state.is_empty() && _current_state && _current_state->is_finished() && state_queue.size() > 0)
+            if (next_state.is_empty() && _current_state && _current_state->is_finished() && state_queue.size() > 0 && StringName(state_queue.front()) != get_current_state_name())
                 next_state = state_queue.pop_front();
 
             if (next_state.is_empty()) {
                 for (int i = 0; i < _state_list.size(); i++) {
                     FantomeState2D* state = Object::cast_to<FantomeState2D>(_state_list[i]);
-                    if (_state_map.values().has(state) && state->can_switch()) {
+                    if (_state_map.values().has(state) && state->can_switch() && get_current_state() != state) {
                         next_state = state->get_name();
                         break;
                     }
@@ -244,4 +247,5 @@ void FantomeStateController2D::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("change_state", "state_name"), &FantomeStateController2D::change_state);
     ClassDB::bind_method("get_current_state", &FantomeStateController2D::get_current_state);
+    ClassDB::bind_method("get_current_state_name", &FantomeStateController2D::get_current_state_name);
 }
