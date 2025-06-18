@@ -190,10 +190,12 @@ void FantomeStateController2D::_notification(int p_what) {
             if (Engine::get_singleton()->is_editor_hint())
                 return;
 
+            // Queue first
             StringName next_state;
-            if (next_state.is_empty() && _current_state && _current_state->is_finished() && state_queue.size() > 0 && StringName(state_queue.front()) != get_current_state_name())
-                next_state = state_queue.pop_front();
+            if (state_queue.size() > 0 && (!_current_state || (_current_state && _current_state->is_finished())))
+                next_state = StringName(state_queue.pop_front());
 
+            // Nothing from the queue? Automatically switch states if neccessary.
             if (next_state.is_empty()) {
                 for (int i = 0; i < _state_list.size(); i++) {
                     FantomeState2D* state = Object::cast_to<FantomeState2D>(_state_list[i]);
