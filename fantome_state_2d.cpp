@@ -57,10 +57,8 @@ FantomeStateSet2D* FantomeState2D::get_state_set() const {
     return _state_set;
 }
 
-bool FantomeState2D::can_switch() {
-    bool ret = false;
-    GDVIRTUAL_CALL(_can_switch, ret);
-    return ret;
+void FantomeState2D::create_queue() {
+    GDVIRTUAL_CALL(_create_queue);
 }
 
 bool FantomeState2D::is_finished() {
@@ -141,7 +139,7 @@ void FantomeState2D::_bind_methods() {
     GDVIRTUAL_BIND(_enter_controller)
     GDVIRTUAL_BIND(_exit_controller)
 
-    GDVIRTUAL_BIND(_can_switch)
+    GDVIRTUAL_BIND(_create_queue)
     GDVIRTUAL_BIND(_is_finished)
 
     GDVIRTUAL_BIND(_begin, "states")

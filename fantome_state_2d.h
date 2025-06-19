@@ -34,7 +34,7 @@ public:
     FantomeCharacter2D* get_character() const;
     FantomeStateSet2D* get_state_set() const;
 
-    virtual bool can_switch();
+    virtual void create_queue();
     virtual bool is_finished();
 
     virtual void begin(const Dictionary &p_states);
@@ -48,7 +48,7 @@ protected:
     GDVIRTUAL0(_enter_controller);
     GDVIRTUAL0(_exit_controller);
 
-    GDVIRTUAL0R(bool, _can_switch);
+    GDVIRTUAL0(_create_queue);
     GDVIRTUAL0R(bool, _is_finished);
 
     GDVIRTUAL1(_begin, Dictionary);

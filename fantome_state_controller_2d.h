@@ -43,7 +43,8 @@ public:
     
     void update_states();
 
-    void change_state(const StringName &p_state_name);
+    void change_current_state(const StringName &p_state_name);
+    void set_current_state(const StringName &p_state_name);
     FantomeState2D* get_current_state() const;
     StringName get_current_state_name() const;
 

@@ -90,7 +90,7 @@ void FantomeStateController2D::update_states() {
     }
 }
 
-void FantomeStateController2D::change_state(const StringName &p_state_name) {
+void FantomeStateController2D::change_current_state(const StringName &p_state_name) {
     ERR_FAIL_COND_MSG(!_state_map.has(p_state_name), "State " + p_state_name + " does not exist.");
     FantomeState2D *previous_state, *next_state;
 
@@ -109,8 +109,16 @@ void FantomeStateController2D::change_state(const StringName &p_state_name) {
     _state_parameters.set("previous_state", previous_state);
     _state_parameters.set("next_state", Variant());
     _current_state->begin(_state_parameters);
+    _current_state->create_queue();
 
     _current_state->set_active(true);
+}
+
+void FantomeStateController2D::set_current_state(const StringName &p_state_name) {
+    if (get_current_state_name() == p_state_name)
+        return;
+    
+    change_current_state(p_state_name);
 }
 
 FantomeState2D* FantomeStateController2D::get_current_state() const {
@@ -187,29 +195,17 @@ void FantomeStateController2D::_notification(int p_what) {
             update_states();
         } break;
         case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
-            if (Engine::get_singleton()->is_editor_hint())
+            if (Engine::get_singleton()->is_editor_hint() || state_queue.size() == 0)
                 return;
 
-            // Queue first
             StringName next_state;
-            if (state_queue.size() > 0 && (!_current_state || (_current_state && _current_state->is_finished())))
+            if (!_current_state || (_current_state && _current_state->is_finished()))
                 next_state = StringName(state_queue.pop_front());
-
-            // Nothing from the queue? Automatically switch states if neccessary.
-            if (next_state.is_empty()) {
-                for (int i = 0; i < _state_list.size(); i++) {
-                    FantomeState2D* state = Object::cast_to<FantomeState2D>(_state_list[i]);
-                    if (_state_map.values().has(state) && state->can_switch() && get_current_state() != state) {
-                        next_state = state->get_name();
-                        break;
-                    }
-                }
-            }
 
             if (next_state.is_empty())
                 return;
 
-            change_state(next_state);
+            change_current_state(next_state);
         } break;
         case NOTIFICATION_READY: {
             if (Engine::get_singleton()->is_editor_hint())
@@ -219,7 +215,7 @@ void FantomeStateController2D::_notification(int p_what) {
             set_physics_process_internal(true);
             
             ERR_FAIL_COND_MSG(initial_state == nullptr, "No initial state set for this controller!");
-            change_state(initial_state->get_name());
+            change_current_state(initial_state->get_name());
         } break;
     }
 }
@@ -247,7 +243,8 @@ void FantomeStateController2D::_bind_methods() {
 
     ClassDB::bind_method("update_states", &FantomeStateController2D::update_states);
 
-    ClassDB::bind_method(D_METHOD("change_state", "state_name"), &FantomeStateController2D::change_state);
+    ClassDB::bind_method(D_METHOD("change_current_state", "state_name"), &FantomeStateController2D::change_current_state);
+    ClassDB::bind_method(D_METHOD("set_current_state", "state_name"), &FantomeStateController2D::set_current_state);
     ClassDB::bind_method("get_current_state", &FantomeStateController2D::get_current_state);
     ClassDB::bind_method("get_current_state_name", &FantomeStateController2D::get_current_state_name);
 }
